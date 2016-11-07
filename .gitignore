@@ -7,6 +7,3 @@ Homestead.yaml
 .env
 !/.env
 !/vendor/
-/bootstrap/
-/storage/
-/tests/
