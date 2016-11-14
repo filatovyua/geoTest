@@ -8,26 +8,27 @@ use Illuminate\Support\Facades\Input;
 class CoordsController extends Controller{    
     
     
-    public function get(){
+    public function post(){
         $model = new CoordsModel;
-        if (Input::has("id")){
-            return response()->json($model->selectByID(Input::get("id")));
+        $content = json_decode(file_get_contents("php://input"));
+        if (isset($content->id)){
+            return response()->json($model->selectByID($content->id));
         }else{
             return response()->json($model->selectAll());
         }
     } 
     
     public function put(){
-        $model = new CoordsModel;          
-        if (Input::has("lat") && Input::has("lon")){
-            try{
-                $model->insertRow(Input::get("lat"), Input::get("lon"), Input::get("text"));
-            } catch (Exception $ex) {
-                return responce()->json(["success"=>0,"input"=>Input::all()]);
-            } 
-        }else{
-            return response()->json(["success"=>0]);
+        $model = new CoordsModel;   
+        $content = json_decode(file_get_contents("php://input"));
+        try {
+            foreach ($content as $row){
+                $model->insertRow($row->lat, $row->lon, $row->text);
+            }
+        } catch (Exception $ex) {
+            return json_encode(["success"=>0,"message"=>$ex->getMessage()]);
         }
+        return json_encode(["success"=>1]);
     }
         
 }

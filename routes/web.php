@@ -15,5 +15,5 @@ Route::get('/', function () {
     return view('start');
 });
 
-Route::get('/coords', "CoordsController@get");
+Route::post('/coords', "CoordsController@post");
 Route::put('/coords', "CoordsController@put");
