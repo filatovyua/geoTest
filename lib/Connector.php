@@ -7,7 +7,6 @@ class Connector {
     protected $db = "main";
     protected $table = "coords";
     protected $host = "localhost";
-
     private $link = null;
 
     public function __construct() {
@@ -21,34 +20,38 @@ class Connector {
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
             ]);
         } catch (Exception $ex) {
-            throw new Exception("Connection lost: $dsn :".$ex->getMessage());
+            throw new Exception("Connection lost: $dsn :" . $ex->getMessage());
         }
         return $this;
     }
-    
-    public function query($sql){
+
+    public function query($sql) {
         if (!$sql)
-            return NULL;        
+            return NULL;
         return $this->link->query($sql);
     }
-    
-    public function get($id){
+
+    public function get($id) {
         $wh = "";
         if ($id)
             $wh .= " WHERE ind=$id ";
         return $this->fetchArray($this->query("SELECT X(coordinates) as lat, Y(coordinates) as lon, `text` FROM {$this->db}.{$this->table} $wh"));
     }
-    
-    public function put($data){
+
+    public function put($lon, $lat, $text) { 
+        if (!$lon || !$lat)
+            return false;
         return $this->query("INSERT INTO {$this->db}.{$this->table} (`text`,`coordinates`)"
-        . " VALUES ('{$data['text']}',POINT({$data['lat']},{$data["lon"]})) ") !== false;
+                        . " VALUES ('$text',POINT($lon,$lat)) ");
     }
-    
-    public function fetch($resouce){
+
+    public function fetch($resouce) {
         return $resouce->fetch();
     }
-    public function fetchArray($resource){
-        while ($s = $this->fetch($resource)){
+
+    public function fetchArray($resource) {
+        $result = [];
+        while ($s = $this->fetch($resource)) {
             $result[] = $s;
         }
         return $result;

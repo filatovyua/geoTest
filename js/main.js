@@ -1,8 +1,7 @@
 "use strict";
 document.addEventListener("DOMContentLoaded", () => {
-
+        
     var myMap, promise, MapHelper, AjaxHelper, mapHelper, ajaxHelper;
-
     MapHelper = function () {
 
         this.addPlacemark = function (coords, hintContent) {
@@ -18,7 +17,12 @@ document.addEventListener("DOMContentLoaded", () => {
         return (function(_this){
             myMap.events.add("click", function(e) {
                 var t;
-                ajaxHelper.put(e.get("coords"),t = "Это красивая метка").then(()=>{
+                ajaxHelper.put(e.get("coords"),t = "Это красивая метка").then((response)=>{
+                    var res = JSON.parse(response);
+                    if (res.success != 1){
+                        alert("Извините, точка не добавлена");
+                        return;
+                    }
                     _this.addPlacemark(e.get("coords"),t); 
                 }).catch(()=>{
                     throw new Error("Error put coords into table");
@@ -29,13 +33,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     AjaxHelper = function () {
         var _url = "/coords", _send;
-        _send = function (method, url) {
+        _send = function (method, data = []) {
             if (!method)
                 return null;
             return new Promise(function (resolve, reject) {
                 var xhr = new XMLHttpRequest();
-                xhr.open(method,_url+(url || ""), true);
-
+                xhr.open(method,_url, true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                 xhr.onload = function () {
                     if (this.status == 200) {
                         resolve(this.response);
@@ -45,19 +49,22 @@ document.addEventListener("DOMContentLoaded", () => {
                         reject(error);
                     }
                 };
-
                 xhr.onerror = function () {
                     reject(new Error("Network Error"));
                 };
 
-                xhr.send();
+                xhr.send(JSON.stringify(data));
             });
         }
         this.get = function(){
             return _send("GET");
         }
         this.put = function(coords,text){
-            return _send("PUT","?lat="+coords[0]+"&lon="+coords[1]+"&text="+text);
+            return _send("PUT",{
+                lat: coords[0],
+                lon: coords[1],
+                text: text
+            });
         }
     }
 
@@ -75,10 +82,10 @@ document.addEventListener("DOMContentLoaded", () => {
         mapHelper = new MapHelper();
         ajaxHelper = new AjaxHelper(); 
         return ajaxHelper.get();
-    }).then((responce)=>{
-        if (!responce)
+    }).then((response)=>{
+        if (!response)
             return;
-        JSON.parse(responce).map((cur)=>{
+        JSON.parse(response).map((cur)=>{
            mapHelper.addPlacemark([
                cur["lat"],
                cur["lon"]

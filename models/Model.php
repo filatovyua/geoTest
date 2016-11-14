@@ -10,8 +10,14 @@ class Model{
     }
     
     public function putCoords($data){
-        if (!isset($data["lat"]) || !isset($data["lon"]))
-            throw new Exception("Lon or Lat is not defined");
-        return Factory::Connector()->connect()->put($data);
+        if (!is_array($data))
+            throw new Exception("data is not Array");
+        foreach ($data as $value) {
+            if (Factory::Connector()->connect()->put($value->lon, $value->lat, $value->text) == FALSE)
+                throw new Exception("Error put data");
+        }
+        return [
+            "success"=>1
+        ];
     }
 }

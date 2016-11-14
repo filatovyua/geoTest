@@ -12,7 +12,11 @@ class Route{
         if (!method_exists('Controller', $action)){
             self::ErrorPage404();
         }
-        Factory::Controller($method)->$action();
+        try {
+            Factory::Controller($method)->$action(); 
+        } catch (Exception $ex) {
+            echo json_encode(["success"=>0, "message"=>$ex->getMessage()]);
+        }
     }   
     
     public static function ErrorPage404(){

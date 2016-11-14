@@ -7,20 +7,7 @@ class Controller {
 
     public function __construct($method) {
         $this->method = $method;
-        $this->filter($_REQUEST);
-        $this->vars = &$_REQUEST;
-    }
-
-    private function filter(&$data) {
-        if (is_array($data)) {
-            foreach ($data as $key => $val) {
-                $this->filter($data[$key]);
-            }
-        } else {
-            $data = strip_tags($data);
-            $data = preg_replace("/(INSERT|SELECT|EXEC|UPDATE|DROP|TRUNCATE|DELETE|CREATE|USE|DESCRIBE|TABLE)/i", "", $data);
-            $data = htmlspecialchars($data);
-        }
+        $this->vars = json_decode(file_get_contents("php://input"));
     }
 
     public function index() {
