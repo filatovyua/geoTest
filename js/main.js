@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
         this.get = function(){
-            return _send("GET");
+            return _send("POST");
         }
         this.put = function(coords,text){
             return _send("PUT",{

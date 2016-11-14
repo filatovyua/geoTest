@@ -5,8 +5,8 @@ class Model{
     public function __construct() {
     }    
     
-    public function getCoords($id){
-        return Factory::Connector()->connect()->get($id);
+    public function getCoords($data){
+        return Factory::Connector()->connect()->get($data->id);
     }
     
     public function putCoords($data){

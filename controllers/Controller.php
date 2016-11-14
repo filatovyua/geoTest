@@ -16,7 +16,7 @@ class Controller {
 
     public function coords() {
         if ($this->method == "GET" || $this->method == "POST") {
-            Factory::View()->generate("template_responce.php", Factory::Model()->getCoords($this->vars["id"]));
+            Factory::View()->generate("template_responce.php", Factory::Model()->getCoords($this->vars));
         } elseif ($this->method == "PUT") {
             Factory::View()->generate("template_responce.php", Factory::Model()->putCoords($this->vars));
         } elseif ($this->method == "DELETE") {
